@@ -30,8 +30,8 @@ const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'
 const suits = ['D', 'H', 'C', 'S'];
 
 export interface GameResult {
-  card: string;           // e.g. "Q-H"
-  winner: 1 | 2 | 3;       // 1=Amar, 2=Akbar, 3=Anthony
+  card: string;
+  winner: 1 | 2 | 3;
 }
 
 function drawRandomCard(): string {
@@ -45,9 +45,9 @@ export const getResult = (): GameResult => {
   const value = card.split('-')[0];
 
   let winner: 1 | 2 | 3;
-  if (['A', '2', '3', '4', '5', '6'].includes(value)) winner = 1;  // Amar
-  else if (['7', '8', '9', '10'].includes(value)) winner = 2;  // Akbar
-  else /* J,Q,K */                                     winner = 3;  // Anthony
+  if (['A', '2', '3', '4', '5', '6'].includes(value)) winner = 1;
+  else if (['7', '8', '9', '10'].includes(value)) winner = 2;
+  else /* J,Q,K */     winner = 3;
 
   return { card, winner };
 };
@@ -73,6 +73,5 @@ export const getBetResult = (betAmount: number, chip: number, result: number): B
     resultData.status = 'win';
     resultData.winAmount = Math.min(betAmount * resultData.mult, appConfig.maxCashoutAmount);
   }
-
   return resultData;
 };
