@@ -41,9 +41,10 @@ export const getHistory = async ({ user_id, operator_id, limit = 10 }: { user_id
                 const userBets = JSON.parse(row.userBets || "[]");
 
                 const gameResult = JSON.parse(row.result || "{}");
-
                 const winner = gameResult.winner;
-                const winnerCards = gameResult[winner?.toString()] || [];
+                const winnerCard = gameResult.card || '';
+
+
                 for (const bet of userBets) {
                     const stake = parseFloat(bet.betAmount);
                     const win = parseFloat(bet.winAmount) - stake;
@@ -56,7 +57,7 @@ export const getHistory = async ({ user_id, operator_id, limit = 10 }: { user_id
                         'p/l': bet.status === 'win' || bet.mult == 0.5 ? bet.winAmount - bet.betAmount : 0 - stake,
                         beton: bet.chip,
                         round_id: row.lobby_id,
-                        winnerCards
+                        winningCard: winnerCard,
                     });
                 }
             } catch (e) {
@@ -77,7 +78,7 @@ export const getMatchHistory = async (socket: Socket, userId: string, operator_i
     try {
         const historyData = await read(`SELECT lobby_id, result, created_at FROM lobbies ORDER BY created_at DESC LIMIT 3`);
         const getLastWin = await read(`SELECT win_amount FROM settlement WHERE user_id = ? and operator_id = ? and win_amount > 0 ORDER BY created_at DESC LIMIT 1`, [decodeURIComponent(userId), operator_id]);
-        if(getLastWin && getLastWin.length > 0) socket.emit('lastWin', { lastWin: getLastWin[0].win_amount});
+        if (getLastWin && getLastWin.length > 0) socket.emit('lastWin', { lastWin: getLastWin[0].win_amount });
         return socket.emit('historyData', historyData);
     } catch (err) {
         console.error(`Err while getting user history data is:::`, err);
@@ -99,12 +100,23 @@ apiRouter.get('/bet/detail', async (req: any, res: any) => {
         const roundResult = JSON.parse(userBet.result);
         const userBets = JSON.parse(userBet.userBets);
 
+        const rankMap: Record<string, string> = {
+            A: 'Ace', K: 'King', Q: 'Queen', J: 'Jack',
+            '10': '10', '9': '9', '8': '8', '7': '7', '6': '6',
+            '5': '5', '4': '4', '3': '3', '2': '2'
+        };
+        const suitMap: Record<string, string> = {
+            S: 'Spades ♠', H: 'Hearts ♥', D: 'Diamonds ♦', C: 'Clubs ♣'
+        };
+        const [rankCode = '', suitCode = ''] = roundResult?.card?.split('-') || [];
+        const resultCardFullName = `${rankMap[rankCode] || rankCode} of ${suitMap[suitCode] || suitCode}`;
+
         const finalData: any = {
             lobby_id: userBet.lobby_id,
             user_id: userBet.user_id,
             operator_id: userBet.operator_id,
             total_bet_amount: parseFloat(userBet.bet_amount).toFixed(2),
-            result_card: roundResult.result_card,
+            result_card: resultCardFullName,
             bet_time: userBet.created_at,
 
         };
@@ -112,20 +124,21 @@ apiRouter.get('/bet/detail', async (req: any, res: any) => {
         // Determine winner
         let winner = '';
         if (roundResult.winner === 1) {
-            winner = 'playerA';
+            winner = 'Amar';
         } else if (roundResult.winner === 2) {
-            winner = 'playerB';
+            winner = 'Akbar';
         } else if (roundResult.winner === 3) {
-            winner = 'draw';
+            winner = 'Anthony';
         }
         finalData['winner'] = winner;
 
         // Bet mapping with chip conversion
         userBets.forEach((e: any, i: number) => {
             let mappedChip = '';
-            if (e.chip == 1) mappedChip = 'playerA';
-            else if (e.chip == 2) mappedChip = 'playerB';
-            else mappedChip = e.chip.toString();
+            if (e.chip == 1) mappedChip = 'Amar';
+            else if (e.chip == 2) mappedChip = 'Akbar';
+            else if (e.chip == 3) mappedChip = 'Anthony';
+
 
             finalData[`Bet${i + 1}`] = {
                 chip: mappedChip,
