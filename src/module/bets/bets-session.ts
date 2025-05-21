@@ -85,11 +85,11 @@ export const placeBet = async (socket: Socket, betData: [string, string]) => {
     });
 
     if (isBetInvalid) {
-        return logEventAndEmitResponse(socket, betObj, 'Invalid Bet', 'bet');
+        return logEventAndEmitResponse(socket, betObj, 'INVALID BET', 'bet');
     }
 
     if (totalBetAmount > Number(balance)) {
-        return logEventAndEmitResponse(socket, betObj, 'Insufficient Balance', 'bet');
+        return logEventAndEmitResponse(socket, betObj, 'INSUFFICIENT BALANCE', 'bet');
     }
 
     const ip = getUserIP(socket);
@@ -110,7 +110,7 @@ export const placeBet = async (socket: Socket, betData: [string, string]) => {
         user_id: userId
     }, "DEBIT", { game_id, operatorId, token });
 
-    if (!webhookData.status) return socket.emit("betError", "Bet Cancelled By Upstream Server.");
+    if (!webhookData.status) return socket.emit("betError", "BET CANCELLED BY UPSTREAM SERVER.");
     if (webhookData.txn_id) betObj.txn_id = webhookData.txn_id;
 
     roundBets.push(betObj);
@@ -131,7 +131,7 @@ export const placeBet = async (socket: Socket, betData: [string, string]) => {
         balance: parsedPlayerDetails.balance
     });
 
-    return socket.emit("bet", { message: "Bet Placed Successfully" });
+    return socket.emit("bet", { message: "BET PLACED SUCCESSFULLY" });
 };
 
 export const settleBet = async (io: Server, result: GameResult, lobbyId: number): Promise<void> => {
@@ -189,9 +189,9 @@ export const settleBet = async (io: Server, result: GameResult, lobbyId: number)
                         }, 200);
                     }
 
-                    io.to(socket_id).emit('settlement', { message: `You Win ${winAmount}`, mywinningAmount: winAmount, status: 'WIN', roundResult: result, betResults, lobby_id });
+                    io.to(socket_id).emit('settlement', { message: `WIN AMOUNT: ${winAmount}`, mywinningAmount: winAmount, status: 'WIN', roundResult: result, betResults, lobby_id });
                 } else {
-                    io.to(socket_id).emit('settlement', { message: `You Loss ${totalBetAmount.toFixed(2)}`, lossAmount: totalBetAmount, status: 'LOSS', roundResult: result, betResults, lobby_id });
+                    io.to(socket_id).emit('settlement', { message: `YOU LOSS ${totalBetAmount.toFixed(2)}`, lossAmount: totalBetAmount, status: 'LOSS', roundResult: result, betResults, lobby_id });
                 }
             }
 
