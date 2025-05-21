@@ -12,7 +12,7 @@ interface BetData {
     betAmount: number;
     chip: number;
 }
-interface GameResult {
+export interface GameResult {
     card: string;
     winner: 1 | 2 | 3;
 }

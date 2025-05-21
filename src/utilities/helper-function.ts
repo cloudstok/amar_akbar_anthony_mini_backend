@@ -1,6 +1,7 @@
 import { appConfig } from './app-config';
 import { createLogger } from './logger';
 import { Socket } from 'socket.io';
+import { GameResult } from '../module/bets/bets-session';
 
 const failedBetLogger = createLogger('failedBets', 'jsonl');
 
@@ -28,11 +29,6 @@ export const getUserIP = (socket: any): string => {
 
 const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
 const suits = ['D', 'H', 'C', 'S'];
-
-export interface GameResult {
-  card: string;
-  winner: 1 | 2 | 3;
-}
 
 function drawRandomCard(): string {
   const v = values[Math.floor(Math.random() * values.length)];
