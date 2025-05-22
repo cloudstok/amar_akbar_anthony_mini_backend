@@ -61,7 +61,7 @@ export const getBetResult = (betAmount: number, chip: number, result: number): B
     chip,
     betAmount,
     winAmount: 0,
-    mult: chip === 1 ? 2.1 : chip === 2 ? 3.15 : 4.15,
+    mult: chip === 1 ? 2.10 : chip === 2 ? 3.15 : 4.15,
     status: 'loss'
   };
 
