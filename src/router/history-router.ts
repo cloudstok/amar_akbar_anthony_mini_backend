@@ -48,7 +48,7 @@ export const getHistory = async ({ user_id, operator_id, limit = 10 }: { user_id
                 for (const bet of userBets) {
                     const stake = parseFloat(bet.betAmount);
                     const win = parseFloat(bet.winAmount) - stake;
-                    const odds = parseFloat(bet.mult);
+                    const odds = parseFloat(bet.mult).toFixed(2);
 
 
                     result.push({
