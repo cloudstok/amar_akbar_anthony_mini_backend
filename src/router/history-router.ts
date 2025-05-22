@@ -54,7 +54,7 @@ export const getHistory = async ({ user_id, operator_id, limit = 10 }: { user_id
                     result.push({
                         stake,
                         odds,
-                        'p/l': bet.status === 'win' || bet.mult == 0.5 ? bet.winAmount - bet.betAmount : 0 - stake,
+                        'p/l': bet.status === 'win' || bet.mult == 0.5 ? (bet.winAmount - bet.betAmount).toFixed(2) : 0 - stake,
                         beton: bet.chip === 1 ? 'Amar' : bet.chip === 2 ? 'Akbar' : 'Anthony',
                         round_id: row.lobby_id,
                         winningCard: winnerCard,
@@ -78,7 +78,7 @@ export const getMatchHistory = async (socket: Socket, userId: string, operator_i
     try {
         const historyData = await read(`SELECT lobby_id, result, created_at FROM lobbies ORDER BY created_at DESC LIMIT 3`);
         const getLastWin = await read(`SELECT win_amount FROM settlement WHERE user_id = ? and operator_id = ? and win_amount > 0 ORDER BY created_at DESC LIMIT 1`, [decodeURIComponent(userId), operator_id]);
-        if (getLastWin && getLastWin.length > 0) socket.emit('lastWin', { lastWin: getLastWin[0].win_amount });
+        if (getLastWin && getLastWin.length > 0) socket.emit('lastWin', { myWinningAmount: getLastWin[0].win_amount });
         return socket.emit('historyData', historyData);
     } catch (err) {
         console.error(`Err while getting user history data is:::`, err);
