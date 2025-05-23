@@ -110,7 +110,7 @@ export const placeBet = async (socket: Socket, betData: [string, string]) => {
         user_id: userId
     }, "DEBIT", { game_id, operatorId, token });
 
-    if (!webhookData.status) return socket.emit("betError", "BET CANCELLED BY UPSTREAM SERVER.");
+    if (!webhookData.status) return socket.emit("betError", "BET CANCELLED BY UPSTREAM SERVER");
     if (webhookData.txn_id) betObj.txn_id = webhookData.txn_id;
 
     roundBets.push(betObj);
