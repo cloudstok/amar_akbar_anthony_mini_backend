@@ -27,23 +27,20 @@ export const getUserIP = (socket: any): string => {
   return socket.handshake.address || '';
 };
 
-const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+const values = [['A', '2', '3', '4', '5', '6'], ['7', '8', '9', '10'], ['J', 'Q', 'K']];
 const suits = ['D', 'H', 'C', 'S'];
 
-function drawRandomCard(): string {
-  const v = values[Math.floor(Math.random() * values.length)];
+function drawRandomCard(category: number): string {
+  const value = values[category - 1];
+  const v = value[Math.floor(Math.random() * value.length)];
   const s = suits[Math.floor(Math.random() * suits.length)];
   return `${v}-${s}`;
 }
 
 export const getResult = (): GameResult => {
-  const card = drawRandomCard();
-  const value = card.split('-')[0];
-
-  let winner: 1 | 2 | 3;
-  if (['A', '2', '3', '4', '5', '6'].includes(value)) winner = 1;
-  else if (['7', '8', '9', '10'].includes(value)) winner = 2;
-  else /* J,Q,K */     winner = 3;
+  const result = Math.random();
+  let winner: 1 | 2 | 3 = (result <= 0.235) ? 3 : (result <= 0.54) ? 2 : 1;
+  const card = drawRandomCard(winner);
 
   return { card, winner };
 };
