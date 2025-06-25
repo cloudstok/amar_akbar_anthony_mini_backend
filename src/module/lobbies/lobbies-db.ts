@@ -13,6 +13,9 @@ interface LobbyData {
 export const insertLobbies = async (data: LobbyData): Promise<void> => {
   try {
     const { time, ...lobbyInfo } = data;
+     if (typeof lobbyInfo.result === 'object') {
+        lobbyInfo.result = JSON.stringify(lobbyInfo.result);
+      }
     await write(SQL_INSERT_LOBBIES, Object.values(lobbyInfo));
   } catch (err) {
     console.error(err);
